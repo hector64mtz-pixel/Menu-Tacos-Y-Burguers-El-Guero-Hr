@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tacos y Burger's El Güero HR</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; color: #333; }
+        h1 { text-align: center; color: #d9534f; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #666; margin-top: 0; font-weight: bold; }
+        .menu-container { max-width: 700px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 80px; }
+        
+        .category-header { border-bottom: 2px solid #e74c3c; padding-bottom: 5px; margin-top: 30px; }
+        .category-header h2 { color: #2c3e50; margin: 0; font-size: 20px; }
+        .category-header span { font-size: 13px; color: #7f8c8d; font-weight: normal; display: block; margin-top: 2px; }
+
+        .product-card { border-bottom: 1px solid #eee; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+        .product-info h3 { margin: 0 0 5px 0; font-size: 16px; color: #222; }
+        .product-info p { margin: 0; color: #666; font-size: 13px; }
+        .price { font-weight: bold; color: #27ae60; font-size: 15px; display: block; margin-top: 4px; }
+        .btn-add { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .btn-add:hover { background: #c0392b; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
+        .modal-content { background: white; width: 90%; max-width: 500px; padding: 20px; border-radius: 8px; max-height: 85vh; overflow-y: auto; }
+        
+        .checkbox-group { margin: 15px 0; }
+        .checkbox-group label { display: block; margin-bottom: 8px; font-size: 14px; cursor: pointer; }
+        .textarea-notes { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px; resize: vertical; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 3px; color: #444; }
+        .form-input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+
+        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2ecc71; color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 -4px 6px rgba(0,0,0,0.1); font-size: 16px; z-index: 100; }
+        
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .cart-controls { display: flex; align-items: center; gap: 10px; }
+        .btn-qty { background: #ddd; border: none; padding: 4px 8px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .btn-remove { background: #e74c3c; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        
+        .btn-whatsapp-tec { background: #27ae60; color: white; font-weight: bold; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 15px; text-align: center; }
+        .btn-whatsapp-mirador { background: #2980b9; color: white; font-weight: bold; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 15px; text-align: center; }
+        
+        .btn-primary { background: #e74c3c; color: white; font-weight: bold; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .btn-close { background: #7f8c8d; color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .loading { text-align: center; font-size: 18px; color: #666; padding: 40px; }
+    </style>
+</head>
+<body>
+
+    <h1>🌮 Tacos y Burger's El Güero HR 🍔</h1>
+    <p class="subtitle">¡Rompiendo Dietas!</p>
+
+    <div class="menu-container" id="menu">
+        <div class="loading">Cargando menú actualizado... 🔄</div>
+    </div>
+
+    <div class="cart-bar" onclick="abrirCarrito()">
+        🛒 Ver Carrito (<span id="contador-items">0</span> productos) - Total: $<span id="total-bar">0</span> MXN
+    </div>
+
+    <div class="modal" id="modalPersonalizar">
+        <div class="modal-content">
+            <h2 id="modal-titulo-producto" style="margin-top:0; color:#d9534f;">Personalizar</h2>
+            <p id="modal-desc-producto" style="font-size: 13px; color: #666;"></p>
+            
+            <div id="contenedor-opciones-personalizacion"></div>
+
+            <label style="font-size: 14px; font-weight: bold; display: block; margin-top: 15px;">Instrucciones o notas especiales:</label>
+            <textarea id="input-notas" class="textarea-notes" rows="2" placeholder="Ej. Carne bien cocida, Hamburguesa partida a la mitad..."></textarea>
+
+            <button class="btn-primary" onclick="confirmarPersonalizacion()">Agregar al Carrito</button>
+            <button class="btn-close" onclick="cerrarPersonalizar()">Cancelar</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modalCarrito">
+        <div class="modal-content">
+            <h2>Tu Pedido</h2>
+            <div id="lista-carrito-modal">
+                <p>Tu carrito está vacío.</p>
+            </div>
+            <h3>Total: $<span id="total-modal">0</span> MXN</h3>
+            
+            <div style="margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 6px;">
+                <p style="font-size: 14px; font-weight: bold; margin: 0 0 8px 0; color: #333;">Método de entrega:</p>
+                <label style="cursor: pointer; margin-right: 15px;"><input type="radio" name="tipoEntrega" value="recoger" checked onclick="toggleFormularioDomicilio()"> Recoger en sucursal</label>
+                <label style="cursor: pointer;"><input type="radio" name="tipoEntrega" value="domicilio" onclick="toggleFormularioDomicilio()"> Envío a domicilio</label>
+            </div>
+
+            <div id="seccionDomicilio" style="display: none; background: #fff5f5; padding: 12px; border-radius: 6px; border: 1px solid #f5c6cb; margin-bottom: 15px;">
+                <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #d9534f;">Datos de Envío a Domicilio:</p>
+                <div class="form-group"><label>1. Nombre:</label><input type="text" id="inputNombre" class="form-input" placeholder="Tu nombre completo"></div>
+                <div class="form-group"><label>2. N.o. Teléfono:</label><input type="text" id="inputTelefono" class="form-input" placeholder="10 dígitos"></div>
+                <div class="form-group"><label>3. Calle:</label><input type="text" id="inputCalle" class="form-input" placeholder="Nombre de la calle y número"></div>
+                <div class="form-group"><label>4. Colonia:</label><input type="text" id="inputColonia" class="form-input" placeholder="Nombre de la colonia"></div>
+                <div class="form-group"><label>5. Código Postal:</label><input type="text" id="inputCp" class="form-input" placeholder="CP"></div>
+                <div class="form-group"><label>6. Referencias:</label><input type="text" id="inputReferencias" class="form-input" placeholder="Color de casa, entre calles..."></div>
+            </div>
+
+            <p style="font-size: 14px; font-weight: bold; margin-top: 15px; text-align: center; color: #555;">Elige la sucursal para enviar tu pedido:</p>
+            <button class="btn-whatsapp-tec" onclick="enviarPedido('528129398270', 'Suc. Tec')">📲 Enviar Pedido Suc. Tec</button>
+            <button class="btn-whatsapp-mirador" onclick="enviarPedido('528120817314', 'Suc. Camino al Mirador')">📲 Enviar Pedido Suc. Camino al Mirador</button>
+            
+            <button class="btn-close" onclick="cerrarCarrito()">Cerrar y seguir comprando</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPaj6h1Mn0P4dNRKIoRNVUNjKr1nUTX9_IJxU3wd9iLpJyaqwBp2DNh3itGtm1S3stoQ/exec"; 
+        
+        let menuData = { promociones: [], burgers: [], tacos: [], papas: [] };
+        let carrito = [];
+        let productoEnEdicion = null;
+
+        async function cargarMenuDesdeSheets() {
+            try {
+                let respuesta = await fetch(SCRIPT_URL);
+                let datosCrudos = await respuesta.json();
+
+                menuData = { promociones: [], burgers: [], tacos: [], papas: [] };
+                
+                datosCrudos.forEach(item => {
+                    item.precio = Number(item.precio);
+                    // Lectura exacta y limpia de la columna preciolnd
+                    item.preciolnd = Number(item.preciolnd) || 0; 
+                    
+                    if (menuData[item.categoria]) {
+                        menuData[item.categoria].push(item);
+                    }
+                });
+
+                renderizarMenu();
+            } catch (error) {
+                console.error("Error al cargar el menú:", error);
+                document.getElementById('menu').innerHTML = `<p style="color:red; text-align:center;">Error al cargar el menú desde la hoja de cálculo. Verifica tu conexión o URL.</p>`;
+            }
+        }
+
+        function renderizarMenu() {
+            const contenedor = document.getElementById('menu');
+            let html = "";
+            const titulosSecciones = {
+                promociones: { principal: "🔥 Promociones y Paquetes", sub: "Los paquetes favoritos" },
+                burgers: { principal: "🍔 Hamburguesas", sub: "Especialidad de la casa" },
+                tacos: { principal: "🌮 Tacos", sub: "Piratas, Campechanas, Gringas y más" },
+                papas: { principal: "🥔 Papas Asadas", sub: "También contamos con papas fritas" }
+            };
+
+            for (let categoria in titulosSecciones) {
+                let sec = titulosSecciones[categoria];
+                let listaProductos = menuData[categoria] || [];
+                
+                if (listaProductos.length > 0) {
+                    html += `<div class="category-header"><h2>${sec.principal}</h2><span>${sec.sub}</span></div>`;
+                    listaProductos.forEach(item => {
+                        html += `
+                            <div class="product-card">
+                                <div class="product-info">
+                                    <h3>${item.nombre}</h3>
+                                    <p>${item.desc}</p>
+                                    <span class="price">$${item.precio} MXN</span>
+                                </div>
+                                <button class="btn-add" onclick='prepararPersonalizacion(${JSON.stringify(item)})'>Agregar</button>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            contenedor.innerHTML = html;
+        }
+
+        function prepararPersonalizacion(item) {
+            productoEnEdicion = item;
+            document.getElementById('modal-titulo-producto').innerText = item.nombre;
+            document.getElementById('modal-desc-producto').innerText = item.desc;
+            document.getElementById('input-notas').value = "";
+
+            const contenedorOpciones = document.getElementById('contenedor-opciones-personalizacion');
+            let opcionesHtml = "";
+
+            if (item.tipo === 'burger') {
+                opcionesHtml = `
+                    <p style="font-weight: bold; margin-bottom: 5px;">Personaliza (¿Qué le quitamos?):</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin lechuga"> Sin lechuga</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin aguacate"> Sin aguacate</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin mostaza"> Sin mostaza</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin mayonesa"> Sin mayonesa</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin ketchup"> Sin ketchup</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin queso"> Sin queso</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin jamón"> Sin jamón</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin salami"> Sin salami</label>
+                    </div>
+                `;
+            } else if (item.tipo === 'papa') {
+                opcionesHtml = `
+                    <p style="font-weight: bold; margin-bottom: 5px;">Personaliza (¿Qué le quitamos?):</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin mantequilla"> Sin Mantequilla</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin queso amarillo"> Sin Queso Amarillo</label>
+                        <label><input type="checkbox" class="opcion-ingrediente" value="Sin queso blanco"> Sin Queso Blanco</label>
+                    </div>
+                `;
+            } else if (item.tipo === 'taco') {
+                opcionesHtml = `
+                    <p style="font-weight: bold; margin-bottom: 5px;">Elige presentación y tortilla:</p>
+                    <div class="checkbox-group">
+                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Maíz" checked> Orden (5 piezas) - Maíz ($${item.precio})</label>
+                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Harina"> Orden (5 piezas) - Harina ($${item.precio})</label>
+                        <label><input type="radio" name="tipoTaco" value="Individual - Maíz"> Individual - Maíz ($${item.preciolnd})</label>
+                        <label><input type="radio" name="tipoTaco" value="Individual - Harina"> Individual - Harina ($${item.preciolnd})</label>
+                    </div>
+                `;
+            } else {
+                opcionesHtml = `<p style="color: #666; font-style: italic;">Este producto no requiere personalización adicional.</p>`;
+            }
+
+            contenedorOpciones.innerHTML = opcionesHtml;
+            document.getElementById('modalPersonalizar').style.display = 'flex';
+        }
+
+        function cerrarPersonalizar() {
+            document.getElementById('modalPersonalizar').style.display = 'none';
+        }
+
+        function confirmarPersonalizacion() {
+            let modificaciones = [];
+            let precioFinal = productoEnEdicion.precio;
+
+            if (productoEnEdicion.tipo === 'taco') {
+                let radioSeleccionado = document.querySelector('input[name="tipoTaco"]:checked');
+                if (radioSeleccionado) {
+                    modificaciones.push(radioSeleccionado.value);
+                    if (radioSeleccionado.value.includes("Individual")) {
+                        precioFinal = productoEnEdicion.preciolnd;
+                    }
+                }
+            }
+
+            let checkboxes = document.querySelectorAll('.opcion-ingrediente:checked');
+            checkboxes.forEach(cb => modificaciones.push(cb.value));
+
+            let notasExtra = document.getElementById('input-notas').value.trim();
+            if (notasExtra) modificaciones.push(notasExtra);
+
+            let textoDetalle = modificaciones.length > 0 ? " (" + modificaciones.join(", ") + ")" : "";
+            let nombreFinal = productoEnEdicion.nombre + textoDetalle;
+
+            let encontrado = carrito.find(item => item.nombreCompleto === nombreFinal);
+            if (encontrado) {
+                encontrado.cantidad++;
+            } else {
+                carrito.push({
+                    nombreCompleto: nombreFinal,
+                    nombreBase: productoEnEdicion.nombre,
+                    precio: precioFinal,
+                    cantidad: 1,
+                    detalles: textoDetalle
+                });
+            }
+
+            actualizarCarritoUI();
+            cerrarPersonalizar();
+        }
+
+        function cambiarCantidad(nombreCompleto, cambio) {
+            let item = carrito.find(i => i.nombreCompleto === nombreCompleto);
+            if (item) {
+                item.cantidad += cambio;
+                if (item.cantidad <= 0) {
+                    carrito = carrito.filter(i => i.nombreCompleto !== nombreCompleto);
+                }
+            }
+            actualizarCarritoUI();
+            actualizarModalCarrito();
+        }
+
+        function actualizarCarritoUI() {
+            let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            let totalPrice = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            
+            document.getElementById('contador-items').innerText = totalItems;
+            document.getElementById('total-bar').innerText = totalPrice;
+        }
+
+        function abrirCarrito() {
+            actualizarModalCarrito();
+            document.getElementById('modalCarrito').style.display = 'flex';
+        }
+
+        function cerrarCarrito() {
+            document.getElementById('modalCarrito').style.display = 'none';
+        }
+
+        function toggleFormularioDomicilio() {
+            let tipo = document.querySelector('input[name="tipoEntrega"]:checked').value;
+            let seccion = document.getElementById('seccionDomicilio');
+            if (tipo === 'domicilio') {
+                seccion.style.display = 'block';
+            } else {
+                seccion.style.display = 'none';
+            }
+        }
+
+        function actualizarModalCarrito() {
+            const contenedorModal = document.getElementById('lista-carrito-modal');
+            let totalPrice = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            document.getElementById('total-modal').innerText = totalPrice;
+
+            if (carrito.length === 0) {
+                contenedorModal.innerHTML = "<p>Tu carrito está vacío.</p>";
+                return;
+            }
+
+            let html = "";
+            carrito.forEach(item => {
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.nombreCompleto}</strong><br>
+                            <small>$${item.precio} x ${item.cantidad} = $${item.precio * item.cantidad} MXN</small>
+                        </div>
+                        <div class="cart-controls">
+                            <button class="btn-qty" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', -1)">-</button>
+                            <span>${item.cantidad}</span>
+                            <button class="btn-qty" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', 1)">+</button>
+                            <button class="btn-remove" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', -${item.cantidad})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            });
+            contenedorModal.innerHTML = html;
+        }
+
+        function enviarPedido(numeroNegocio, nombreSucursal) {
+            if (carrito.length === 0) {
+                alert("Primero agrega algo rico al carrito.");
+                return;
+            }
+
+            let tipoEntrega = document.querySelector('input[name="tipoEntrega"]:checked').value;
+            let mensaje = "";
+
+            if (tipoEntrega === 'recoger') {
+                mensaje = `Hola que tal! Me gustaria Realizar el siguiente pedido y pasar a recoger 👋🏻\n*(Sucursal: ${nombreSucursal})*\n\n`;
+            } else {
+                let nombre = document.getElementById('inputNombre').value.trim();
+                let telefono = document.getElementById('inputTelefono').value.trim();
+                let calle = document.getElementById('inputCalle').value.trim();
+                let colonia = document.getElementById('inputColonia').value.trim();
+                let cp = document.getElementById('inputCp').value.trim();
+                let referencias = document.getElementById('inputReferencias').value.trim();
+
+                if (!nombre || !telefono || !calle || !colonia) {
+                    alert("Por favor completa al menos Nombre, Teléfono, Calle y Colonia para el envío a domicilio.");
+                    return;
+                }
+
+                mensaje = `Hola que tal! Me gustaria Realizar el siguiente pedido con *Envío a domicilio*:\n*(Sucursal que atiende: ${nombreSucursal})*\n\n`;
+                mensaje += `📋 *Datos de Envío:*\n`;
+                mensaje += `1 - Nombre: ${nombre}\n`;
+                mensaje += `2 - N.o. Teléfono: ${telefono}\n`;
+                mensaje += `3 - Calle: ${calle}\n`;
+                mensaje += `4 - Colonia: ${colonia}\n`;
+                mensaje += `5 - Código Postal: ${cp}\n`;
+                mensaje += `6 - Referencias: ${referencias}\n\n`;
+            }
+
+            mensaje += `🛒 *Detalle del Pedido:*\n`;
+            let totalGeneral = 0;
+
+            carrito.forEach((item, index) => {
+                let subtotal = item.precio * item.cantidad;
+                mensaje += `${index + 1}. ${item.cantidad}x *${item.nombreCompleto}* - $${subtotal}\n`;
+                totalGeneral += subtotal;
+            });
+
+            mensaje += `\n*Total a pagar: $${totalGeneral} MXN*\n\n¿Me confirman si procede, por favor?`;
+
+            let url = `https://wa.me/${numeroNegocio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        cargarMenuDesdeSheets();
+    </script>
+
+</body>
+</html>
