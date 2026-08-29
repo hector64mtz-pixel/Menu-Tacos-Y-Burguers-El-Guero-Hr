@@ -214,6 +214,12 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); }
         .modal-content { background: #1e1e1e; color: #f5f5f5; width: 90%; max-width: 500px; padding: 25px; border-radius: 14px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
         
+        /* Controles de Cantidad en Modal */
+        .modal-cantidad-container { display: flex; align-items: center; justify-content: space-between; background: #252525; padding: 10px 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #333; }
+        .modal-cantidad-controls { display: flex; align-items: center; gap: 12px; }
+        .btn-modal-qty { background: #333; color: #fff; border: none; width: 32px; height: 32px; cursor: pointer; font-weight: bold; font-size: 16px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .btn-modal-qty:hover { background: #444; }
+
         /* Modal para Zoom de Imagen */
         .modal-imagen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 300; text-align: center; backdrop-filter: blur(5px); }
         .modal-imagen img { max-width: 90%; max-height: 85vh; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
@@ -314,6 +320,16 @@
             
             <div id="contenedor-opciones-personalizacion"></div>
 
+            <!-- Selector de Cantidad dentro del Modal -->
+            <div class="modal-cantidad-container">
+                <span style="font-weight: 600; font-size: 14px;">Cantidad:</span>
+                <div class="modal-cantidad-controls">
+                    <button class="btn-modal-qty" onclick="cambiarCantidadModal(-1)">-</button>
+                    <span id="modal-cantidad-num" style="font-size: 16px; font-weight: 700; color: #fff; width: 20px; text-align: center;">1</span>
+                    <button class="btn-modal-qty" onclick="cambiarCantidadModal(1)">+</button>
+                </div>
+            </div>
+
             <label style="font-size: 14px; font-weight: 600; display: block; margin-top: 15px; color: #ddd;">Instrucciones o notas especiales:</label>
             <textarea id="input-notas" class="textarea-notes" rows="2" placeholder="Ej. Carne bien cocida, Hamburguesa partida a la mitad..."></textarea>
 
@@ -361,6 +377,7 @@
         let menuData = { promociones: [], burgers: [], tacos: [], papas: [] };
         let carrito = [];
         let productoEnEdicion = null;
+        let cantidadModalActual = 1;
 
         function toggleMapa(idMapa) {
             let mapa = document.getElementById(idMapa);
@@ -444,6 +461,9 @@
             animarHamburguesaAlCarrito(event.target);
 
             productoEnEdicion = item;
+            cantidadModalActual = 1; // Reiniciar siempre a 1 al abrir
+            document.getElementById('modal-cantidad-num').innerText = cantidadModalActual;
+            
             document.getElementById('modal-titulo-producto').innerText = item.nombre;
             document.getElementById('modal-desc-producto').innerText = item.desc;
             document.getElementById('input-notas').value = "";
@@ -490,6 +510,12 @@
 
             contenedorOpciones.innerHTML = opcionesHtml;
             document.getElementById('modalPersonalizar').style.display = 'flex';
+        }
+
+        function cambiarCantidadModal(cambio) {
+            cantidadModalActual += cambio;
+            if (cantidadModalActual < 1) cantidadModalActual = 1;
+            document.getElementById('modal-cantidad-num').innerText = cantidadModalActual;
         }
 
         function animarHamburguesaAlCarrito(boton) {
@@ -541,13 +567,13 @@
 
             let encontrado = carrito.find(item => item.nombreCompleto === nombreFinal);
             if (encontrado) {
-                encontrado.cantidad++;
+                encontrado.cantidad += cantidadModalActual; // Suma la cantidad seleccionada en el modal
             } else {
                 carrito.push({
                     nombreCompleto: nombreFinal,
                     nombreBase: productoEnEdicion.nombre,
                     precio: precioFinal,
-                    cantidad: 1,
+                    cantidad: cantidadModalActual, // Asigna la cantidad elegida
                     detalles: textoDetalle
                 });
             }
@@ -679,5 +705,4 @@
     </script>
 
 </body>
-</html>
 </html>
