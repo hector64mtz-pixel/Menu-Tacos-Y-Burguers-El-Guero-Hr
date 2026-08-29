@@ -4,70 +4,317 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tacos y Burger's El Güero HR</title>
+    <!-- Importamos tipografía moderna de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        h1 { text-align: center; color: #d9534f; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #666; margin-top: 0; font-weight: bold; }
-        .menu-container { max-width: 700px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 80px; }
-        
-        .category-header { border-bottom: 2px solid #e74c3c; padding-bottom: 5px; margin-top: 30px; }
-        .category-header h2 { color: #2c3e50; margin: 0; font-size: 20px; }
-        .category-header span { font-size: 13px; color: #7f8c8d; font-weight: normal; display: block; margin-top: 2px; }
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #f5f5f5;
+            --text-muted: #b0b0b0;
+            --primary-red: #e74c3c;
+            --primary-red-hover: #c0392b;
+            --accent-gold: #f1c40f;
+            --accent-green: #27ae60;
+            --border-color: #2a2a2a;
+        }
 
-        .product-card { border-bottom: 1px solid #eee; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
-        .product-info h3 { margin: 0 0 5px 0; font-size: 16px; color: #222; }
-        .product-info p { margin: 0; color: #666; font-size: 13px; }
-        .price { font-weight: bold; color: #27ae60; font-size: 15px; display: block; margin-top: 4px; }
-        .btn-add { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .btn-add:hover { background: #c0392b; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
-        .modal-content { background: white; width: 90%; max-width: 500px; padding: 20px; border-radius: 8px; max-height: 85vh; overflow-y: auto; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-main); 
+        }
         
+        /* Encabezado con Estilo y Logo */
+        header { 
+            background-color: #0d0d0d; 
+            padding: 25px 15px; 
+            text-align: center; 
+            border-bottom: 4px solid var(--primary-red); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .logo-img { 
+            max-width: 280px; 
+            width: 100%; 
+            height: auto; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+        }
+        p.subtitle { 
+            color: var(--accent-gold); 
+            margin-top: 10px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+        }
+
+        /* Sección de Sucursales al Inicio */
+        .sucursales-container {
+            max-width: 750px;
+            margin: 20px auto 10px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .sucursales-container { grid-template-columns: 1fr; }
+        }
+        .sucursal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .sucursal-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: var(--accent-gold);
+        }
+        .btn-mapa-toggle {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-mapa-toggle:hover { background: #3a3a3a; }
+        
+        .mapa-wrapper {
+            display: none;
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+        .mapa-wrapper iframe {
+            width: 100%;
+            height: 180px;
+            border: 0;
+            display: block;
+        }
+        .btn-externo-mapa {
+            display: block;
+            background: #2980b9;
+            color: white;
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .btn-externo-mapa:hover { background: #2471a3; }
+
+        /* Contenedor del Menú */
+        .menu-container { 
+            max-width: 750px; 
+            margin: 0 auto; 
+            padding: 10px 15px 90px 15px; 
+        }
+        
+        .category-header { 
+            border-bottom: 2px solid var(--primary-red); 
+            padding-bottom: 8px; 
+            margin: 35px 0 20px 0; 
+        }
+        .category-header h2 { 
+            color: var(--text-main); 
+            margin: 0; 
+            font-size: 22px; 
+            font-weight: 700; 
+        }
+        .category-header span { 
+            font-size: 13px; 
+            color: var(--text-muted); 
+            font-weight: 400; 
+            display: block; 
+            margin-top: 2px; 
+        }
+
+        /* Tarjetas Flotantes de Productos */
+        .product-card { 
+            background-color: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .product-card:hover {
+            border-color: #444;
+            transform: translateY(-2px);
+        }
+        .product-thumb { 
+            width: 80px; 
+            height: 80px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            flex-shrink: 0; 
+            background: #2a2a2a; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+        }
+        .product-thumb:hover { transform: scale(1.05); }
+        .product-info { flex-grow: 1; }
+        .product-info h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; color: #fff; }
+        .product-info p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4; }
+        .price { font-weight: 700; color: #2ecc71; font-size: 15px; display: block; margin-top: 6px; }
+        
+        .btn-add { 
+            background: var(--primary-red); 
+            color: white; 
+            border: none; 
+            padding: 9px 18px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: background 0.2s, transform 0.1s; 
+            box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+        }
+        .btn-add:hover { background: var(--primary-red-hover); }
+        .btn-add:active { transform: scale(0.95); }
+
+        /* Animación de la Hamburguesa Voladora hacia el Carrito */
+        @keyframes volarAlCarrito {
+            0% { opacity: 1; transform: scale(1) translate(0, 0) rotate(0deg); }
+            50% { transform: scale(1.4) translate(-30px, -80px) rotate(-15deg); }
+            85% { transform: scale(0.8) translate(0, 150px) rotate(10deg); }
+            100% { opacity: 0; transform: scale(0.4) translate(0, 220px) rotate(0deg); }
+        }
+
+        .hamburguesa-voladora {
+            position: fixed;
+            font-size: 28px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: volarAlCarrito 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Modales Estilizados */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); }
+        .modal-content { background: #1e1e1e; color: #f5f5f5; width: 90%; max-width: 500px; padding: 25px; border-radius: 14px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        
+        /* Modal para Zoom de Imagen */
+        .modal-imagen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 300; text-align: center; backdrop-filter: blur(5px); }
+        .modal-imagen img { max-width: 90%; max-height: 85vh; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
+        .cerrar-zoom { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; }
+
         .checkbox-group { margin: 15px 0; }
-        .checkbox-group label { display: block; margin-bottom: 8px; font-size: 14px; cursor: pointer; }
-        .textarea-notes { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px; resize: vertical; }
+        .checkbox-group label { display: block; margin-bottom: 10px; font-size: 14px; cursor: pointer; color: #ddd; }
+        .checkbox-group input { accent-color: var(--primary-red); transform: scale(1.1); margin-right: 8px; }
+        
+        .textarea-notes { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 8px; margin-top: 5px; resize: vertical; font-family: 'Poppins', sans-serif; }
+        .textarea-notes:focus { border-color: var(--primary-red); outline: none; }
 
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 3px; color: #444; }
-        .form-input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #ccc; }
+        .form-input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 8px; font-size: 14px; font-family: 'Poppins', sans-serif; }
+        .form-input:focus { border-color: var(--primary-red); outline: none; }
 
-        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2ecc71; color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 -4px 6px rgba(0,0,0,0.1); font-size: 16px; z-index: 100; }
+        /* Barra de Carrito Inferior Estilo App */
+        .cart-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #27ae60; 
+            color: white; 
+            padding: 16px; 
+            text-align: center; 
+            font-weight: 600; 
+            cursor: pointer; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.4); 
+            font-size: 16px; 
+            z-index: 100; 
+            transition: background 0.2s, transform 0.1s; 
+        }
+        .cart-bar:hover { background: #219653; }
         
-        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
-        .cart-controls { display: flex; align-items: center; gap: 10px; }
-        .btn-qty { background: #ddd; border: none; padding: 4px 8px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        .btn-remove { background: #e74c3c; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 12px 0; }
+        .cart-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-qty { background: #333; color: #fff; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 6px; }
+        .btn-remove { background: var(--primary-red); color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 6px; font-size: 12px; }
         
-        .btn-whatsapp-tec { background: #27ae60; color: white; font-weight: bold; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 15px; text-align: center; }
-        .btn-whatsapp-mirador { background: #2980b9; color: white; font-weight: bold; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 15px; text-align: center; }
+        .btn-whatsapp-tec { background: #27ae60; color: white; font-weight: 600; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; text-align: center; box-shadow: 0 3px 8px rgba(39, 174, 96, 0.3); margin-top: 5px; }
+        .btn-whatsapp-mirador { background: #2980b9; color: white; font-weight: 600; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; text-align: center; box-shadow: 0 3px 8px rgba(41, 128, 185, 0.3); margin-top: 5px; }
         
-        .btn-primary { background: #e74c3c; color: white; font-weight: bold; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .btn-close { background: #7f8c8d; color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .loading { text-align: center; font-size: 18px; color: #666; padding: 40px; }
+        .btn-primary { background: var(--primary-red); color: white; font-weight: 600; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+        .btn-close { background: #555; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 8px; }
+        .loading { text-align: center; font-size: 18px; color: var(--text-muted); padding: 50px; }
     </style>
 </head>
 <body>
 
-    <h1>🌮 Tacos y Burger's El Güero HR 🍔</h1>
-    <p class="subtitle">¡Rompiendo Dietas!</p>
+    <header>
+        <img src="https://i.postimg.cc/Z5Z1sLXf/Whats-App-Image-2026-08-25-at-17-58-03.jpg" alt="Tacos y Burger's El Güero HR" class="logo-img">
+        <p class="subtitle">¡Tacos, Burger's, Papas y Más... Rompiendo Dietas!</p>
+    </header>
+
+    <!-- SECCIÓN DE SUCURSALES Y MAPAS AL INICIO -->
+    <div class="sucursales-container">
+        <!-- Sucursal Tec -->
+        <div class="sucursal-card">
+            <h3>📍 Sucursal Tec</h3>
+            <button class="btn-mapa-toggle" onclick="toggleMapa('mapaTec')">Ver Mapa 🗺️</button>
+            <div class="mapa-wrapper" id="mapaTec">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3596.5720671832755!2d-100.2816824!3d25.652324600000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662bf014e3b3a85%3A0xbbfd4a1065b9a88a!2sTacos%20Y%20Burger%20El%20G%C3%9CERO%20HR!5e0!3m2!1ses-419!2smx!4v1787999925121!5m2!1ses-419!2smx" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <a href="https://maps.app.goo.gl/wS32U3xR21hXvU4z6" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
+            </div>
+        </div>
+
+        <!-- Sucursal Camino al Mirador -->
+        <div class="sucursal-card">
+            <h3>📍 Suc. Camino al Mirador</h3>
+            <button class="btn-mapa-toggle" onclick="toggleMapa('mapaMirador')">Ver Mapa 🗺️</button>
+            <div class="mapa-wrapper" id="mapaMirador">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7194.646578751038!2d-100.2986845!3d25.627393699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662bf13e8abbd11%3A0xbd3c19c5a5b2bcb7!2sTacos%20y%20Burgers%20El%20Guero%20Hr!5e0!3m2!1ses-419!2smx!4v1788000009056!5m2!1ses-419!2smx" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <a href="https://maps.app.goo.gl/9Z32U3xR21hXvU4z6" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
+            </div>
+        </div>
+    </div>
 
     <div class="menu-container" id="menu">
         <div class="loading">Cargando menú actualizado... 🔄</div>
     </div>
 
-    <div class="cart-bar" onclick="abrirCarrito()">
+    <!-- Visor de Imagen en Grande (Zoom) -->
+    <div class="modal-imagen" id="modalZoom" onclick="cerrarZoom()">
+        <span class="cerrar-zoom">&times;</span>
+        <img id="imgZoom" src="" alt="Vista previa">
+    </div>
+
+    <div class="cart-bar" id="barraCarrito" onclick="abrirCarrito()">
         🛒 Ver Carrito (<span id="contador-items">0</span> productos) - Total: $<span id="total-bar">0</span> MXN
     </div>
 
     <div class="modal" id="modalPersonalizar">
         <div class="modal-content">
-            <h2 id="modal-titulo-producto" style="margin-top:0; color:#d9534f;">Personalizar</h2>
-            <p id="modal-desc-producto" style="font-size: 13px; color: #666;"></p>
+            <h2 id="modal-titulo-producto" style="margin-top:0; color:var(--primary-red);">Personalizar</h2>
+            <p id="modal-desc-producto" style="font-size: 13px; color: var(--text-muted);"></p>
             
             <div id="contenedor-opciones-personalizacion"></div>
 
-            <label style="font-size: 14px; font-weight: bold; display: block; margin-top: 15px;">Instrucciones o notas especiales:</label>
+            <label style="font-size: 14px; font-weight: 600; display: block; margin-top: 15px; color: #ddd;">Instrucciones o notas especiales:</label>
             <textarea id="input-notas" class="textarea-notes" rows="2" placeholder="Ej. Carne bien cocida, Hamburguesa partida a la mitad..."></textarea>
 
             <button class="btn-primary" onclick="confirmarPersonalizacion()">Agregar al Carrito</button>
@@ -77,20 +324,20 @@
 
     <div class="modal" id="modalCarrito">
         <div class="modal-content">
-            <h2>Tu Pedido</h2>
+            <h2 style="margin-top:0;">Tu Pedido</h2>
             <div id="lista-carrito-modal">
                 <p>Tu carrito está vacío.</p>
             </div>
-            <h3>Total: $<span id="total-modal">0</span> MXN</h3>
+            <h3 style="margin-bottom: 5px;">Total: $<span id="total-modal">0</span> MXN</h3>
             
-            <div style="margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 6px;">
-                <p style="font-size: 14px; font-weight: bold; margin: 0 0 8px 0; color: #333;">Método de entrega:</p>
-                <label style="cursor: pointer; margin-right: 15px;"><input type="radio" name="tipoEntrega" value="recoger" checked onclick="toggleFormularioDomicilio()"> Recoger en sucursal</label>
-                <label style="cursor: pointer;"><input type="radio" name="tipoEntrega" value="domicilio" onclick="toggleFormularioDomicilio()"> Envío a domicilio</label>
+            <div style="margin: 15px 0; background: #252525; padding: 12px; border-radius: 8px; border: 1px solid #333;">
+                <p style="font-size: 14px; font-weight: 600; margin: 0 0 8px 0; color: #fff;">Método de entrega:</p>
+                <label style="cursor: pointer; margin-right: 15px; color: #ddd;"><input type="radio" name="tipoEntrega" value="recoger" checked onclick="toggleFormularioDomicilio()"> Recoger en sucursal</label>
+                <label style="cursor: pointer; color: #ddd;"><input type="radio" name="tipoEntrega" value="domicilio" onclick="toggleFormularioDomicilio()"> Envío a domicilio</label>
             </div>
 
-            <div id="seccionDomicilio" style="display: none; background: #fff5f5; padding: 12px; border-radius: 6px; border: 1px solid #f5c6cb; margin-bottom: 15px;">
-                <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #d9534f;">Datos de Envío a Domicilio:</p>
+            <div id="seccionDomicilio" style="display: none; background: #251616; padding: 12px; border-radius: 8px; border: 1px solid #5a2a2a; margin-bottom: 15px;">
+                <p style="font-size: 14px; font-weight: 600; margin: 0 0 10px 0; color: #e74c3c;">Datos de Envío a Domicilio:</p>
                 <div class="form-group"><label>1. Nombre:</label><input type="text" id="inputNombre" class="form-input" placeholder="Tu nombre completo"></div>
                 <div class="form-group"><label>2. N.o. Teléfono:</label><input type="text" id="inputTelefono" class="form-input" placeholder="10 dígitos"></div>
                 <div class="form-group"><label>3. Calle:</label><input type="text" id="inputCalle" class="form-input" placeholder="Nombre de la calle y número"></div>
@@ -99,11 +346,12 @@
                 <div class="form-group"><label>6. Referencias:</label><input type="text" id="inputReferencias" class="form-input" placeholder="Color de casa, entre calles..."></div>
             </div>
 
-            <p style="font-size: 14px; font-weight: bold; margin-top: 15px; text-align: center; color: #555;">Elige la sucursal para enviar tu pedido:</p>
+            <p style="font-size: 14px; font-weight: 600; margin-top: 15px; text-align: center; color: #ccc;">Elige la sucursal para enviar tu pedido:</p>
+            
             <button class="btn-whatsapp-tec" onclick="enviarPedido('528129398270', 'Suc. Tec')">📲 Enviar Pedido Suc. Tec</button>
             <button class="btn-whatsapp-mirador" onclick="enviarPedido('528120817314', 'Suc. Camino al Mirador')">📲 Enviar Pedido Suc. Camino al Mirador</button>
             
-            <button class="btn-close" onclick="cerrarCarrito()">Cerrar y seguir comprando</button>
+            <button class="btn-close" onclick="cerrarCarrito()" style="margin-top: 15px;">Cerrar y seguir comprando</button>
         </div>
     </div>
 
@@ -114,6 +362,15 @@
         let carrito = [];
         let productoEnEdicion = null;
 
+        function toggleMapa(idMapa) {
+            let mapa = document.getElementById(idMapa);
+            if (mapa.style.display === "block") {
+                mapa.style.display = "none";
+            } else {
+                mapa.style.display = "block";
+            }
+        }
+
         async function cargarMenuDesdeSheets() {
             try {
                 let respuesta = await fetch(SCRIPT_URL);
@@ -123,8 +380,6 @@
                 
                 datosCrudos.forEach(item => {
                     item.precio = Number(item.precio);
-                    
-                    // Sistema de respaldo flexible para capturar el precio individual sin importar variaciones de mayúsculas/minúsculas
                     let valorInd = item.preciolnd !== undefined ? item.preciolnd : (item.precioInd !== undefined ? item.precioInd : 0);
                     item.preciolnd = Number(valorInd) || 0; 
                     
@@ -157,14 +412,17 @@
                 if (listaProductos.length > 0) {
                     html += `<div class="category-header"><h2>${sec.principal}</h2><span>${sec.sub}</span></div>`;
                     listaProductos.forEach(item => {
+                        let imagenHtml = item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" class="product-thumb" onclick="abrirZoom('${item.imagen}')">` : '';
+
                         html += `
-                            <div class="product-card">
+                            <div class="product-card" id="card-${item.nombre.replace(/[^a-zA-Z0-9]/g, '')}">
+                                ${imagenHtml}
                                 <div class="product-info">
                                     <h3>${item.nombre}</h3>
                                     <p>${item.desc}</p>
                                     <span class="price">$${item.precio} MXN</span>
                                 </div>
-                                <button class="btn-add" onclick='prepararPersonalizacion(${JSON.stringify(item)})'>Agregar</button>
+                                <button class="btn-add" onclick='prepararPersonalizacion(${JSON.stringify(item)}, event)'>Agregar</button>
                             </div>
                         `;
                     });
@@ -173,7 +431,18 @@
             contenedor.innerHTML = html;
         }
 
-        function prepararPersonalizacion(item) {
+        function abrirZoom(urlImagen) {
+            document.getElementById('imgZoom').src = urlImagen;
+            document.getElementById('modalZoom').style.display = 'flex';
+        }
+
+        function cerrarZoom() {
+            document.getElementById('modalZoom').style.display = 'none';
+        }
+
+        function prepararPersonalizacion(item, event) {
+            animarHamburguesaAlCarrito(event.target);
+
             productoEnEdicion = item;
             document.getElementById('modal-titulo-producto').innerText = item.nombre;
             document.getElementById('modal-desc-producto').innerText = item.desc;
@@ -184,7 +453,7 @@
 
             if (item.tipo === 'burger') {
                 opcionesHtml = `
-                    <p style="font-weight: bold; margin-bottom: 5px;">Personaliza (¿Qué le quitamos?):</p>
+                    <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Personaliza (¿Qué le quitamos?):</p>
                     <div class="checkbox-group">
                         <label><input type="checkbox" class="opcion-ingrediente" value="Sin lechuga"> Sin lechuga</label>
                         <label><input type="checkbox" class="opcion-ingrediente" value="Sin aguacate"> Sin aguacate</label>
@@ -198,7 +467,7 @@
                 `;
             } else if (item.tipo === 'papa') {
                 opcionesHtml = `
-                    <p style="font-weight: bold; margin-bottom: 5px;">Personaliza (¿Qué le quitamos?):</p>
+                    <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Personaliza (¿Qué le quitamos?):</p>
                     <div class="checkbox-group">
                         <label><input type="checkbox" class="opcion-ingrediente" value="Sin mantequilla"> Sin Mantequilla</label>
                         <label><input type="checkbox" class="opcion-ingrediente" value="Sin queso amarillo"> Sin Queso Amarillo</label>
@@ -207,7 +476,7 @@
                 `;
             } else if (item.tipo === 'taco') {
                 opcionesHtml = `
-                    <p style="font-weight: bold; margin-bottom: 5px;">Elige presentación y tortilla:</p>
+                    <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Elige presentación y tortilla:</p>
                     <div class="checkbox-group">
                         <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Maíz" checked> Orden (5 piezas) - Maíz ($${item.precio})</label>
                         <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Harina"> Orden (5 piezas) - Harina ($${item.precio})</label>
@@ -216,11 +485,31 @@
                     </div>
                 `;
             } else {
-                opcionesHtml = `<p style="color: #666; font-style: italic;">Este producto no requiere personalización adicional.</p>`;
+                opcionesHtml = `<p style="color: var(--text-muted); font-style: italic;">Este producto no requiere personalización adicional.</p>`;
             }
 
             contenedorOpciones.innerHTML = opcionesHtml;
             document.getElementById('modalPersonalizar').style.display = 'flex';
+        }
+
+        function animarHamburguesaAlCarrito(boton) {
+            let rect = boton.getBoundingClientRect();
+            let burger = document.createElement('div');
+            burger.className = 'hamburguesa-voladora';
+            burger.innerHTML = '🍔';
+            burger.style.left = (rect.left + rect.width / 2 - 15) + 'px';
+            burger.style.top = (rect.top) + 'px';
+            document.body.appendChild(burger);
+
+            setTimeout(() => {
+                let barra = document.getElementById('barraCarrito');
+                barra.style.transform = 'scale(1.03)';
+                setTimeout(() => { barra.style.transform = 'scale(1)'; }, 150);
+            }, 600);
+
+            setTimeout(() => {
+                burger.remove();
+            }, 750);
         }
 
         function cerrarPersonalizar() {
@@ -312,7 +601,7 @@
             document.getElementById('total-modal').innerText = totalPrice;
 
             if (carrito.length === 0) {
-                contenedorModal.innerHTML = "<p>Tu carrito está vacío.</p>";
+                contenedorModal.innerHTML = "<p style='color: #888; text-align: center;'>Tu carrito está vacío.</p>";
                 return;
             }
 
@@ -321,12 +610,12 @@
                 html += `
                     <div class="cart-item">
                         <div>
-                            <strong>${item.nombreCompleto}</strong><br>
-                            <small>$${item.precio} x ${item.cantidad} = $${item.precio * item.cantidad} MXN</small>
+                            <strong style="color:#fff;">${item.nombreCompleto}</strong><br>
+                            <small style="color:#aaa;">$${item.precio} x ${item.cantidad} = $${item.precio * item.cantidad} MXN</small>
                         </div>
                         <div class="cart-controls">
                             <button class="btn-qty" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', -1)">-</button>
-                            <span>${item.cantidad}</span>
+                            <span style="color:#fff; font-weight:600;">${item.cantidad}</span>
                             <button class="btn-qty" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', 1)">+</button>
                             <button class="btn-remove" onclick="cambiarCantidad('${item.nombreCompleto.replace(/'/g, "\\'")}', -${item.cantidad})">Eliminar</button>
                         </div>
@@ -343,10 +632,10 @@
             }
 
             let tipoEntrega = document.querySelector('input[name="tipoEntrega"]:checked').value;
-            let mensaje = "";
+            let mensaje = "🍔 *NUEVO PEDIDO - Tacos y Burger's El Güero HR* 🌮\n\n";
 
             if (tipoEntrega === 'recoger') {
-                mensaje = `Hola que tal! Me gustaria Realizar el siguiente pedido y pasar a recoger 👋🏻\n*(Sucursal: ${nombreSucursal})*\n\n`;
+                mensaje += `📍 *Modalidad:* Recoger en sucursal *(${nombreSucursal})*\n\n`;
             } else {
                 let nombre = document.getElementById('inputNombre').value.trim();
                 let telefono = document.getElementById('inputTelefono').value.trim();
@@ -360,26 +649,27 @@
                     return;
                 }
 
-                mensaje = `Hola que tal! Me gustaria Realizar el siguiente pedido con *Envío a domicilio*:\n*(Sucursal que atiende: ${nombreSucursal})*\n\n`;
-                mensaje += `📋 *Datos de Envío:*\n`;
-                mensaje += `1 - Nombre: ${nombre}\n`;
-                mensaje += `2 - N.o. Teléfono: ${telefono}\n`;
-                mensaje += `3 - Calle: ${calle}\n`;
-                mensaje += `4 - Colonia: ${colonia}\n`;
-                mensaje += `5 - Código Postal: ${cp}\n`;
-                mensaje += `6 - Referencias: ${referencias}\n\n`;
+                mensaje += `📍 *Modalidad:* Envío a domicilio *(${nombreSucursal})*\n\n`;
+                mensaje += `📋 *DATOS DE ENVÍO:*\n`;
+                mensaje += `• Nombre: ${nombre}\n`;
+                mensaje += `• Teléfono: ${telefono}\n`;
+                mensaje += `• Calle: ${calle}\n`;
+                mensaje += `• Colonia: ${colonia}\n`;
+                mensaje += `• C.P.: ${cp}\n`;
+                mensaje += `• Referencias: ${referencias}\n\n`;
             }
 
-            mensaje += `🛒 *Detalle del Pedido:*\n`;
+            mensaje += `🛒 *DETALLE DEL PEDIDO:*\n`;
             let totalGeneral = 0;
 
             carrito.forEach((item, index) => {
                 let subtotal = item.precio * item.cantidad;
-                mensaje += `${index + 1}. ${item.cantidad}x *${item.nombreCompleto}* - $${subtotal}\n`;
+                mensaje += `${index + 1}. ${item.cantidad}x *${item.nombreCompleto}* - Subtotal: $${subtotal}\n`;
                 totalGeneral += subtotal;
             });
 
-            mensaje += `\n*Total a pagar: $${totalGeneral} MXN*\n\n¿Me confirman si procede, por favor?`;
+            mensaje += `\n💰 *TOTAL A PAGAR:* *${totalGeneral} MXN*\n\n`;
+            mensaje += `¿Me confirman de recibido y tiempo estimado por favor? 🙌🏻`;
 
             let url = `https://wa.me/${numeroNegocio}?text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
@@ -389,4 +679,5 @@
     </script>
 
 </body>
+</html>
 </html>
