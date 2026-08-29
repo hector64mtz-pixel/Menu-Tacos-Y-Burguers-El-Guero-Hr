@@ -214,8 +214,8 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); }
         .modal-content { background: #1e1e1e; color: #f5f5f5; width: 90%; max-width: 500px; padding: 25px; border-radius: 14px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
         
-        /* Controles de Cantidad en Modal */
-        .modal-cantidad-container { display: flex; align-items: center; justify-content: space-between; background: #252525; padding: 10px 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #333; }
+        /* Controles de Cantidad Específicos para Tacos Individuales */
+        #seccionCantidadTacos { display: none; align-items: center; justify-content: space-between; background: #252525; padding: 10px 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #333; }
         .modal-cantidad-controls { display: flex; align-items: center; gap: 12px; }
         .btn-modal-qty { background: #333; color: #fff; border: none; width: 32px; height: 32px; cursor: pointer; font-weight: bold; font-size: 16px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .btn-modal-qty:hover { background: #444; }
@@ -320,13 +320,13 @@
             
             <div id="contenedor-opciones-personalizacion"></div>
 
-            <!-- Selector de Cantidad dentro del Modal -->
-            <div class="modal-cantidad-container">
-                <span style="font-weight: 600; font-size: 14px;">Cantidad:</span>
+            <!-- Selector de Cantidad Inteligente (Solo aparece para Tacos Individuales) -->
+            <div id="seccionCantidadTacos">
+                <span style="font-weight: 600; font-size: 14px; color: #f1c40f;">¿Cuántos tacos individuales?</span>
                 <div class="modal-cantidad-controls">
-                    <button class="btn-modal-qty" onclick="cambiarCantidadModal(-1)">-</button>
-                    <span id="modal-cantidad-num" style="font-size: 16px; font-weight: 700; color: #fff; width: 20px; text-align: center;">1</span>
-                    <button class="btn-modal-qty" onclick="cambiarCantidadModal(1)">+</button>
+                    <button class="btn-modal-qty" onclick="cambiarCantidadTacosModal(-1)">-</button>
+                    <span id="modal-cantidad-tacos-num" style="font-size: 16px; font-weight: 700; color: #fff; width: 20px; text-align: center;">1</span>
+                    <button class="btn-modal-qty" onclick="cambiarCantidadTacosModal(1)">+</button>
                 </div>
             </div>
 
@@ -377,7 +377,7 @@
         let menuData = { promociones: [], burgers: [], tacos: [], papas: [] };
         let carrito = [];
         let productoEnEdicion = null;
-        let cantidadModalActual = 1;
+        let cantidadTacosIndividuales = 1;
 
         function toggleMapa(idMapa) {
             let mapa = document.getElementById(idMapa);
@@ -461,17 +461,19 @@
             animarHamburguesaAlCarrito(event.target);
 
             productoEnEdicion = item;
-            cantidadModalActual = 1; // Reiniciar siempre a 1 al abrir
-            document.getElementById('modal-cantidad-num').innerText = cantidadModalActual;
+            cantidadTacosIndividuales = 1; // Reiniciar siempre a 1
+            document.getElementById('modal-cantidad-tacos-num').innerText = cantidadTacosIndividuales;
             
             document.getElementById('modal-titulo-producto').innerText = item.nombre;
             document.getElementById('modal-desc-producto').innerText = item.desc;
             document.getElementById('input-notas').value = "";
 
             const contenedorOpciones = document.getElementById('contenedor-opciones-personalizacion');
+            const seccionCantidadTacos = document.getElementById('seccionCantidadTacos');
             let opcionesHtml = "";
 
             if (item.tipo === 'burger') {
+                seccionCantidadTacos.style.display = 'none';
                 opcionesHtml = `
                     <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Personaliza (¿Qué le quitamos?):</p>
                     <div class="checkbox-group">
@@ -486,6 +488,7 @@
                     </div>
                 `;
             } else if (item.tipo === 'papa') {
+                seccionCantidadTacos.style.display = 'none';
                 opcionesHtml = `
                     <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Personaliza (¿Qué le quitamos?):</p>
                     <div class="checkbox-group">
@@ -498,13 +501,16 @@
                 opcionesHtml = `
                     <p style="font-weight: 600; margin-bottom: 8px; color: #ddd;">Elige presentación y tortilla:</p>
                     <div class="checkbox-group">
-                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Maíz" checked> Orden (5 piezas) - Maíz ($${item.precio})</label>
-                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Harina"> Orden (5 piezas) - Harina ($${item.precio})</label>
-                        <label><input type="radio" name="tipoTaco" value="Individual - Maíz"> Individual - Maíz ($${item.preciolnd})</label>
-                        <label><input type="radio" name="tipoTaco" value="Individual - Harina"> Individual - Harina ($${item.preciolnd})</label>
+                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Maíz" checked onclick="verificarOpcionTaco()"> Orden (5 piezas) - Maíz ($${item.precio})</label>
+                        <label><input type="radio" name="tipoTaco" value="Orden (5 pzas) - Harina" onclick="verificarOpcionTaco()"> Orden (5 piezas) - Harina ($${item.precio})</label>
+                        <label><input type="radio" name="tipoTaco" value="Individual - Maíz" onclick="verificarOpcionTaco()"> Individual - Maíz ($${item.preciolnd})</label>
+                        <label><input type="radio" name="tipoTaco" value="Individual - Harina" onclick="verificarOpcionTaco()"> Individual - Harina ($${item.preciolnd})</label>
                     </div>
                 `;
+                // Al abrir, por defecto está en Orden, así que ocultamos el selector de cantidad
+                seccionCantidadTacos.style.display = 'none';
             } else {
+                seccionCantidadTacos.style.display = 'none';
                 opcionesHtml = `<p style="color: var(--text-muted); font-style: italic;">Este producto no requiere personalización adicional.</p>`;
             }
 
@@ -512,10 +518,23 @@
             document.getElementById('modalPersonalizar').style.display = 'flex';
         }
 
-        function cambiarCantidadModal(cambio) {
-            cantidadModalActual += cambio;
-            if (cantidadModalActual < 1) cantidadModalActual = 1;
-            document.getElementById('modal-cantidad-num').innerText = cantidadModalActual;
+        // Función que detecta si seleccionaron taco individual para mostrar u ocultar el + y -
+        function verificarOpcionTaco() {
+            let radioSeleccionado = document.querySelector('input[name="tipoTaco"]:checked');
+            let seccionCantidadTacos = document.getElementById('seccionCantidadTacos');
+            if (radioSeleccionado && radioSeleccionado.value.includes("Individual")) {
+                seccionCantidadTacos.style.display = "flex";
+            } else {
+                seccionCantidadTacos.style.display = "none";
+                cantidadTacosIndividuales = 1;
+                document.getElementById('modal-cantidad-tacos-num').innerText = cantidadTacosIndividuales;
+            }
+        }
+
+        function cambiarCantidadTacosModal(cambio) {
+            cantidadTacosIndividuales += cambio;
+            if (cantidadTacosIndividuales < 1) cantidadTacosIndividuales = 1;
+            document.getElementById('modal-cantidad-tacos-num').innerText = cantidadTacosIndividuales;
         }
 
         function animarHamburguesaAlCarrito(boton) {
@@ -545,6 +564,7 @@
         function confirmarPersonalizacion() {
             let modificaciones = [];
             let precioFinal = productoEnEdicion.precio;
+            let cantidadFinal = 1;
 
             if (productoEnEdicion.tipo === 'taco') {
                 let radioSeleccionado = document.querySelector('input[name="tipoTaco"]:checked');
@@ -552,6 +572,7 @@
                     modificaciones.push(radioSeleccionado.value);
                     if (radioSeleccionado.value.includes("Individual")) {
                         precioFinal = productoEnEdicion.preciolnd;
+                        cantidadFinal = cantidadTacosIndividuales; // Toma la cantidad seleccionada con el + y -
                     }
                 }
             }
@@ -567,13 +588,13 @@
 
             let encontrado = carrito.find(item => item.nombreCompleto === nombreFinal);
             if (encontrado) {
-                encontrado.cantidad += cantidadModalActual; // Suma la cantidad seleccionada en el modal
+                encontrado.cantidad += cantidadFinal;
             } else {
                 carrito.push({
                     nombreCompleto: nombreFinal,
                     nombreBase: productoEnEdicion.nombre,
                     precio: precioFinal,
-                    cantidad: cantidadModalActual, // Asigna la cantidad elegida
+                    cantidad: cantidadFinal,
                     detalles: textoDetalle
                 });
             }
@@ -705,4 +726,5 @@
     </script>
 
 </body>
+</html>
 </html>
