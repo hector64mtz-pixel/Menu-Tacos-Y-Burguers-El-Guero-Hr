@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tacos y Burger's El Güero HR</title>
+    
+    <!-- Configuración para convertir la web en App Móvil (PWA) -->
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="El Güero HR">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/Z5Z1sLXf/Whats-App-Image-2026-08-25-at-17-58-03.jpg">
+
     <!-- Importamos tipografía moderna de Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -284,7 +292,7 @@
             <button class="btn-mapa-toggle" onclick="toggleMapa('mapaTec')">Ver Mapa 🗺️</button>
             <div class="mapa-wrapper" id="mapaTec">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3596.5720671832755!2d-100.2816824!3d25.652324600000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662bf014e3b3a85%3A0xbbfd4a1065b9a88a!2sTacos%20Y%20Burger%20El%20G%C3%9CERO%20HR!5e0!3m2!1ses-419!2smx!4v1787999925121!5m2!1ses-419!2smx" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                <a href="https://maps.app.goo.gl/wS32U3xR21hXvU4z6" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
+                <a href="https://maps.app.goo.gl/cA8icYEhdfNqDVb26" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
             </div>
         </div>
 
@@ -294,7 +302,7 @@
             <button class="btn-mapa-toggle" onclick="toggleMapa('mapaMirador')">Ver Mapa 🗺️</button>
             <div class="mapa-wrapper" id="mapaMirador">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7194.646578751038!2d-100.2986845!3d25.627393699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662bf13e8abbd11%3A0xbd3c19c5a5b2bcb7!2sTacos%20y%20Burgers%20El%20Guero%20Hr!5e0!3m2!1ses-419!2smx!4v1788000009056!5m2!1ses-419!2smx" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                <a href="https://maps.app.goo.gl/9Z32U3xR21hXvU4z6" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
+                <a href="https://maps.app.goo.gl/KFuSgJSumBBG2zdXA" target="_blank" class="btn-externo-mapa">🧭 Abrir en Google Maps</a>
             </div>
         </div>
     </div>
@@ -461,7 +469,7 @@
             animarHamburguesaAlCarrito(event.target);
 
             productoEnEdicion = item;
-            cantidadTacosIndividuales = 1; // Reiniciar siempre a 1
+            cantidadTacosIndividuales = 1; 
             document.getElementById('modal-cantidad-tacos-num').innerText = cantidadTacosIndividuales;
             
             document.getElementById('modal-titulo-producto').innerText = item.nombre;
@@ -507,7 +515,6 @@
                         <label><input type="radio" name="tipoTaco" value="Individual - Harina" onclick="verificarOpcionTaco()"> Individual - Harina ($${item.preciolnd})</label>
                     </div>
                 `;
-                // Al abrir, por defecto está en Orden, así que ocultamos el selector de cantidad
                 seccionCantidadTacos.style.display = 'none';
             } else {
                 seccionCantidadTacos.style.display = 'none';
@@ -518,7 +525,6 @@
             document.getElementById('modalPersonalizar').style.display = 'flex';
         }
 
-        // Función que detecta si seleccionaron taco individual para mostrar u ocultar el + y -
         function verificarOpcionTaco() {
             let radioSeleccionado = document.querySelector('input[name="tipoTaco"]:checked');
             let seccionCantidadTacos = document.getElementById('seccionCantidadTacos');
@@ -572,7 +578,7 @@
                     modificaciones.push(radioSeleccionado.value);
                     if (radioSeleccionado.value.includes("Individual")) {
                         precioFinal = productoEnEdicion.preciolnd;
-                        cantidadFinal = cantidadTacosIndividuales; // Toma la cantidad seleccionada con el + y -
+                        cantidadFinal = cantidadTacosIndividuales; 
                     }
                 }
             }
@@ -726,5 +732,4 @@
     </script>
 
 </body>
-</html>
 </html>
